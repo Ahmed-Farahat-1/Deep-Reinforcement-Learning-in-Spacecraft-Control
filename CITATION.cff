@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software or research data, please cite it as below."
+title: "AI-Driven Spacecraft Attitude Stabilization Using Deep Reinforcement Learning"
+authors:
+  - family-names: "Farahat"
+    given-names: "Ahmed"
+    affiliation: "School of Astronautics, Beihang University"
+version: "1.0.0"
+date-released: "2026-11-23"
+repository-code: "https://github.com/AhmedFarahat/Spacecraft-Attitude-Control"
+keywords:
+  - "spacecraft attitude control"
+  - "deep reinforcement learning"
+  - "reaction wheel"
+  - "classical pd control"
+  - "proximal policy optimization"
+  - "twin delayed ddpg"
+  - "soft actor critic"
+  - "guidance navigation and control"

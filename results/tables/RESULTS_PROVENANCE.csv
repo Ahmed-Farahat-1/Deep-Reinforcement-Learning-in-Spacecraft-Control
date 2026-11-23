@@ -1,0 +1,6 @@
+Artifact_Name,Origin_Path,Generating_Script,Timestamp,Validation_Status
+comparative_metrics_all_scenarios.csv,outputs/phase_4g/evaluations/,src/agents/evaluate_phase_4g.py,2026-11-22 13:55,Verified 85/85 tests passed
+td3_final_champion_best.zip,outputs/td3/seed_123/checkpoints/,src/agents/train_td3.py,2026-11-22 11:45,Champion Selected (Score +177.28)
+sac_final_champion_best.zip,outputs/sac/seed_123/checkpoints/,src/agents/train_sac.py,2026-11-22 12:10,Champion Selected (Score +178.78)
+ppo_pilot_model.zip,outputs/ppo_training/models/,src/agents/train_ppo.py,2026-11-21 21:00,Audited Baseline
+trajectory_scenario_*.csv,outputs/phase_4g/evaluations/,src/agents/evaluate_phase_4g.py,2026-11-22 13:55,12 scenarios exported

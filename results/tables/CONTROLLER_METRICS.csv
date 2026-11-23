@@ -1,0 +1,5 @@
+Controller,Validation_Success_Rate,Held_Out_Success_Rate,Overall_Success_Rate,Mean_RMS_Error_deg,Mean_Settling_Time_s,Mean_Control_Energy,Chattering_Score,Tumbles
+Classical PD,100% (7/7),100% (5/5),100% (12/12),1.25,12.8,6.84,Excellent (Smooth),0
+PPO (Anti-Sym),0% (0/7),0% (0/5),0% (0/12),6.85,DNC,0.15,Smooth but Under-actuated,1
+TD3 Champion,85.7% (6/7),40.0% (2/5),66.7% (8/12),1.48,9.4,18.22,Moderate (Bang-Bang Transient),0
+SAC Champion,85.7% (6/7),60.0% (3/5),75.0% (9/12),1.72,11.2,16.9,High Smoothness,1

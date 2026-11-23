@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spacecraft-attitude-control"
+version = "1.0.0"
+description = "AI-Driven Spacecraft Attitude Stabilization Using Deep Reinforcement Learning (PPO, TD3, SAC vs Classical PD)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Ahmed Farahat", email = "ahmed.farahat@buaa.edu.cn" }
+]
+keywords = ["spacecraft", "gnc", "attitude-control", "reinforcement-learning", "ppo", "td3", "sac", "reaction-wheel"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Aerospace",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+    "gymnasium>=0.29.1",
+    "stable-baselines3>=2.3.0",
+    "torch>=2.2.0",
+    "numpy>=1.26.0,<2.0.0",
+    "pandas>=2.2.0",
+    "matplotlib>=3.8.0",
+    "scipy>=1.12.0",
+    "pyyaml>=6.0.1",
+    "openpyxl>=3.1.2"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --strict-markers"

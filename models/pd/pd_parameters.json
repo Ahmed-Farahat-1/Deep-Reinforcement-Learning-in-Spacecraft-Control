@@ -1,0 +1,8 @@
+{
+  "controller_type": "Classical PD",
+  "Kp_Nm_per_rad": 5.0,
+  "Kd_Nms_per_rad": 8.0,
+  "damping_ratio": 0.89,
+  "natural_frequency_rad_s": 0.705,
+  "status": "Validated 100% Success"
+}

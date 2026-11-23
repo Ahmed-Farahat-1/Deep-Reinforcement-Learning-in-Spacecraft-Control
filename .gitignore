@@ -1,0 +1,29 @@
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary & Intermediate Archives
+*.tmp
+*.bak
+*.rar
+*.log
+
+# Large Replay Buffers (Retain models, exclude huge raw memory dumps)
+checkpoints/*_replay_buffer_*.pkl

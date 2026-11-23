@@ -1,0 +1,5 @@
+algorithm,model_role,source_seed,training_steps,file_name,file_size_bytes,sha256,composite_score,success_rate_pct,framework
+PPO,Phase 4E Champion,123,350000,ppo_final_champion_best.zip,141484,8fc2975cb9b78a3e861a6509cf8d271755fc97a176e7186469def2ed03b39169,-227.33,0.0,Stable-Baselines3 2.6.0
+TD3,Phase 4G Champion,123,350000,td3_final_champion_best.zip,264347,c36a544e8d4d49cb9716f56552788e2eca96166cb9a412aa0fbd1f372f8c16db,177.28,100.0,Stable-Baselines3 2.6.0
+SAC,Phase 4G Champion,123,250000,sac_final_champion_best.zip,247077,e4eaa16a4169a41b2f0d3336b14cb62b8c093ee025184412f2a9038f358370c0,178.78,100.0,Stable-Baselines3 2.6.0
+Classical PD,Analytical Baseline,N/A (Deterministic),0,pd_controller.py,7902,4d99c248da7c60df40344c31693304609d5575ccfb74f423cc2d3b43f0ffad76,194.5,100.0,"Analytical (Kp=5.0, Kd=10.0)"

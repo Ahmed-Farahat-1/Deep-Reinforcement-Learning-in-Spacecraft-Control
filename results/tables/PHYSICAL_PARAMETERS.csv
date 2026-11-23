@@ -1,0 +1,9 @@
+Parameter_Symbol,Description,Value,Unit,Verification_Source
+J,Spacecraft Bus Principal Moment of Inertia,10.05,kg*m^2,Phase 2A / 2B Physics Engine
+I_w,Reaction Wheel Rotor Moment of Inertia,0.05,kg*m^2,Phase 2A / 2B Physics Engine
+tau_max,Maximum Motor Torque Limit,0.055,N*m,Actuator Specification
+Omega_max,Hard Reaction Wheel Speed Saturation Boundary,5500.0,RPM,Actuator Safety Limit
+Omega_soft,Soft Penalty Wheel Speed Threshold,4500.0,RPM,Phase 3 Gymnasium Reward
+dt,Numerical Simulation Timestep (RK4),0.01,s,Simulation Standard
+T_sim,Scenario Simulation Duration,100.0,s,Evaluation Suite Standard
+tol_deg,Stabilization Precision Criterion,0.2,deg,GNC Mission Requirement

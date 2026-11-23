@@ -1,0 +1,39 @@
+# Spacecraft Attitude Simulation Physics Configuration
+# All physical quantities are expressed in standard SI units (kg, m, s, rad, N*m).
+
+simulation:
+  time_step: 0.01          # Numerical integration step dt (seconds)
+  max_duration: 60.0       # Episode/Simulation total duration (seconds)
+  integrator: "rk4"        # Runge-Kutta 4th order numerical integrator
+
+spacecraft:
+  # Effective total system moment of inertia about rotation axis: J = J_body + I
+  J_body: 10.0             # Spacecraft body moment of inertia (kg*m^2)
+  I_wheel: 0.05            # Reaction wheel polar moment of inertia (kg*m^2)
+  # Total inertia: J = J_body + I_wheel = 10.05 kg*m^2
+
+reaction_wheel:
+  max_torque: 1.0          # Maximum motor control torque |u_max| (N*m)
+  max_speed: 523.6         # Maximum relative wheel angular speed |Omega_max| (rad/s) ~ 5000 RPM
+  # Separate saturation logic:
+  # - If Omega >= max_speed: prohibit torque accelerating wheel (u > 0), allow u < 0
+  # - If Omega <= -max_speed: prohibit torque decelerating wheel further (u < 0), allow u > 0
+
+pd_controller:
+  # u = Kp * theta + Kd * theta_dot
+  Kp: 5.0                  # Proportional gain (N*m/rad)
+  Kd: 10.0                 # Derivative gain (N*m*s/rad)
+  torque_limit: 1.0        # Saturation on commanded torque (N*m)
+
+disturbances:
+  enabled: false
+  constant_torque: 0.0     # Constant disturbance torque Md (N*m)
+  sinusoidal_amplitude: 0.0
+  sinusoidal_frequency: 0.1
+  pulse_magnitude: 0.0
+  pulse_time_range: [10.0, 12.0]
+
+initial_conditions:
+  theta_0: 0.5236          # Initial attitude angle ~ 30 degrees (rad)
+  theta_dot_0: 0.0         # Initial angular velocity (rad/s)
+  Omega_0: 0.0             # Initial relative wheel speed (rad/s)

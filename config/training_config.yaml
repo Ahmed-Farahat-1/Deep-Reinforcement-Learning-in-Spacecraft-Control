@@ -1,0 +1,116 @@
+# Deep Reinforcement Learning (PPO) Training & Gymnasium Environment Configuration
+# Spacecraft Attitude Stabilization Project
+
+environment:
+  id: "SpacecraftAttitude-v0"
+  time_step: 0.01             # Simulation step dt (seconds), matches physics_config.yaml
+  max_episode_steps: 3000     # 30.0 seconds at dt = 0.01s (matches Phase 2 benchmarks)
+  max_duration_seconds: 30.0
+
+  # Observation Space Scaling
+  # State = [theta, theta_dot, Omega] (+ optional integral state z)
+  # Observations are normalized float32 values within approximately [-1.0, 1.0]
+  observation:
+    theta_scale: 3.14159265   # pi rad (180 deg) - full half-plane scale
+    theta_dot_scale: 2.10     # 2.10 rad/s (120.3 deg/s) - covers 120 deg/s failure threshold without premature clipping
+    Omega_scale: 523.6        # 523.6 rad/s (5000 RPM) - maximum wheel speed
+    clip_obs: true            # Whether to clip normalized observation to [-1.0, 1.0]
+    include_integral: false   # Base environment default (train_ppo enables true for 4D state)
+    z_scale: 1.0              # 1.0 rad*s integral error normalization scale
+    z_max: 1.0                # Clamping anti-windup saturation limit (rad*s)
+    anti_windup: true         # Enable conditional freezing under actuator saturation
+
+  # Action Space Mapping
+  # Continuous 1D Box [-1.0, 1.0] mapped to u_cmd = action * max_torque
+  action:
+    low: -1.0
+    high: 1.0
+    max_torque: 1.0           # Maximum motor torque (N*m)
+
+  # Reward Function Engineering (Phase 4D Redesign: Huber & Momentum-Aware)
+  # R = r_theta + r_theta_dot + r_effort + r_omega + r_sat + r_bonus (+ r_z)
+  reward_weights:
+    reward_type: "huber"      # Huber formulation provides non-vanishing linear gradient for large errors
+    huber_delta: 0.05         # Dimensionless normalized error threshold delta = 0.05 (corresponds to theta = 0.05 * theta_ref = 0.05 * 30 deg = 1.50 deg = 0.02618 rad; note: 0.05 is dimensionless, NOT 0.05 rad which would be 2.865 deg)
+    w_theta: 1.0              # Attitude error Huber penalty weight
+    w_theta_dot: 0.1          # Body angular velocity quadratic penalty weight (damping)
+    w_effort: 0.001           # Control effort (u^2) penalty weight
+    w_omega: 0.005            # Reaction-wheel momentum penalty weight (applied only above 90% wheel speed)
+    omega_warn: 471.24        # 4500 RPM (90% of Omega_max); nominal slewing unpenalized
+    w_torque_sat: 0.05        # Motor torque saturation penalty
+    w_wheel_sat: 1.00         # Wheel speed saturation-event penalty (applied when accelerating torque is blocked)
+    w_blocked_torque: 0.20    # Extra penalty for commanding outward torque at saturation boundary
+    w_bonus: 0.50             # Smooth precision pointing bonus weight (widened Gaussian basin)
+    w_z: 0.05                 # Integrated attitude error penalty weight
+
+  # Normalization references for reward terms (dimensionless normalization)
+  reward_scaling:
+    theta_ref: 0.52359877     # 30 deg in rad (initial maneuver scale)
+    theta_dot_ref: 0.10       # 0.1 rad/s (~5.7 deg/s)
+    u_ref: 1.0                # 1.0 N*m (u_max)
+    omega_ref: 523.6          # 523.6 rad/s (Omega_max)
+    tolerance_theta: 0.0174533    # 1.0 deg in rad (widened from 0.10 deg for smooth 3-deg guidance basin)
+    tolerance_theta_dot: 0.00174533 # 0.10 deg/s in rad/s (widened from 0.01 deg/s)
+
+  # Initial Condition Ranges for Random Reset (Training Exploration)
+  initial_conditions:
+    randomize: false          # Default reset mode (true for training, false for benchmark)
+    theta_range_deg: [-30.0, 30.0]     # Random attitude range (deg)
+    theta_dot_range_deg: [-3.0, 3.0]   # Random body rate range (deg/s)
+    Omega_range_rpm: [-500.0, 500.0]   # Random initial wheel speed (RPM) - keeps |H_0| < 3.5 N*m*s
+    near_saturation_range_rpm: [3800.0, 4600.0] # Near-saturation stress test range (RPM)
+    default_state: [0.1745329, 0.0, 0.0] # Default +10 deg initial error
+    max_initial_momentum: 10.0 # Physical angular momentum constraint (|H0| <= 10.0 N*m*s)
+
+  # Termination & Failure Boundaries
+  termination:
+    failure_theta_deg: 90.0   # Tumble threshold (terminate episode if |theta| > 90 deg)
+    failure_theta_dot_deg: 120.0 # Rate runaway threshold (terminate if |theta_dot| > 120 deg/s = 2.0944 rad/s)
+    terminate_on_wheel_sat: false # NEVER terminate on wheel saturation (allow recovery/despin)
+
+ppo:
+  policy: "AntiSymmetricActorCriticPolicy" # Custom anti-symmetric policy network (Phase 4D)
+  include_integral: true      # 4D observation space with integrated attitude error
+  learning_rate: 0.0003       # 3e-4 adam optimizer learning rate
+  n_steps: 2048               # Rollout steps per environment before update
+  batch_size: 256             # Minibatch size for SGD updates (Phase 4A spec)
+  n_epochs: 10                # Epochs per PPO optimization phase
+  gamma: 0.998                # Effective planning horizon ~5.0s (500 steps), retains 18.4% weight at Ts=8.44s
+  gae_lambda: 0.95            # Generalized Advantage Estimation bias-variance trade-off
+  clip_range: 0.2             # PPO surrogate objective clipping epsilon
+  clip_range_vf: null
+  normalize_advantage: true
+  ent_coef: 0.005             # Entropy regularization coefficient for continuous action exploration
+  vf_coef: 0.5                # Value function loss weighting
+  max_grad_norm: 0.5          # Gradient clipping threshold
+  seed: 42                    # Pseudo-random generator seed for reproducible initialization
+  n_envs: 4                   # Number of parallel vectorized environments
+  device: "cpu"               # Selected via empirical benchmark: CPU achieves 2518 SPS (2.3x faster than GTX 1650 for 64x64 MLP)
+  net_arch:
+    pi: [64, 64]              # Actor MLP hidden layers
+    vf: [64, 64]              # Critic MLP hidden layers
+  total_timesteps: 500000     # Full PPO training run (Phase 4E)
+  ent_coef: 0.005             # Initial entropy regularization coefficient (annealed to 0.002)
+  ent_coef_end: 0.002         # Final entropy regularization coefficient (guaranteed >= 0.002 to prevent entropy collapse)
+
+training_scenarios:
+  distribution:
+    random_nominal: 0.40      # Randomized attitude and wheel speed (|H0| < 3.14 N*m*s)
+    pos10deg: 0.075           # Canonical +10 deg step
+    neg10deg: 0.075           # Canonical -10 deg step
+    pos30deg: 0.05            # +30 deg step (actuator saturation test)
+    neg30deg: 0.05            # -30 deg step (actuator saturation test)
+    constant_pos: 0.05        # Constant disturbance Md = +0.02 N*m (+10 deg)
+    constant_neg: 0.05        # Constant disturbance Md = -0.02 N*m (-10 deg)
+    sinusoidal_dist: 0.10     # Sinusoidal disturbance Md = 0.02*sin(0.2*pi*t)
+    pulse_pos: 0.05           # Pulse disturbance Md = +0.05 N*m (t in [10, 12]s, +10 deg)
+    pulse_neg: 0.05           # Pulse disturbance Md = -0.05 N*m (t in [10, 12]s, -10 deg)
+    near_saturation: 0.05     # Near-saturation stress test (Omega0 in [3800, 4600] RPM)
+
+logging:
+  tensorboard_log: "./logs/ppo/phase_4e/"
+  checkpoint_freq: 25000      # Save checkpoints every 25k timesteps
+  eval_freq: 10000            # Evaluate every 10k timesteps
+  save_path: "./outputs/ppo_training/phase_4e/checkpoints/"
+  best_model_path: "./outputs/ppo_training/phase_4e/best_model/"
+  eval_log_path: "./outputs/ppo_training/phase_4e/evaluations/"

@@ -1,0 +1,11 @@
+Parameter,Classical_PD,PPO,TD3,SAC
+Action Space,"Continuous [-0.055, +0.055] Nm","Continuous [-1.0, 1.0]","Continuous [-1.0, 1.0]","Continuous [-1.0, 1.0]"
+Observation Space,"[error, error_dot]","4-dim [th_norm, th_dot_norm, om_norm, int_err]","4-dim [th_norm, th_dot_norm, om_norm, int_err]","4-dim [th_norm, th_dot_norm, om_norm, int_err]"
+Policy Architecture,N/A,"Anti-Symmetric [64, 64] Tanh","Anti-Symmetric [256, 256] ReLU","Anti-Symmetric [256, 256] ReLU"
+Learning Rate,N/A,3e-4 (Cosine),"3e-4 (Actor), 3e-4 (Critic)","3e-4 (Actor), 3e-4 (Critic)"
+Discount Factor (gamma),N/A,0.998,0.995,0.995
+Replay Buffer Size,N/A,N/A (On-Policy),"200,000","200,000"
+Batch Size,N/A,64,256,256
+Target Update Polyak (tau),N/A,N/A,0.005,0.005
+Policy Delay (d),N/A,N/A,2,1
+Exploration Mechanism,N/A,Gaussian Action Dist,Target Policy Noise + Action Noise,Entropy Regularization (Auto-alpha)

@@ -1,0 +1,5 @@
+Algorithm,Type,Seeds,Steps_per_Seed,Total_Steps,Duration_h,Replay_Buffer,Actor_Arch,Critic_Arch,Champion_Checkpoint,Eval_Score
+Classical PD,Linear Feedback,N/A,0,0,0.0,0,"Analytical Kp=5.0, Kd=8.0",None,Tuned Gains,Reference
+PPO,On-Policy Deep RL,"42, 123, 2026",500000,1500000,2.1,0,"Anti-Symmetric MLP [64, 64] Tanh","MLP [64, 64] Tanh",Seed 123 (500k),-85.4
+TD3,Off-Policy DPG,"42, 123, 2026",500000,1500000,4.6,200000,"Anti-Symmetric MLP [256, 256] ReLU","Twin Critics [256, 256]",Seed 123 (350k),177.28
+SAC,Off-Policy Max-Entropy,"42, 123, 2026",500000,1500000,4.8,200000,"Anti-Symmetric MLP [256, 256] ReLU","Twin Soft Critics [256, 256]",Seed 123 (250k),178.78
